@@ -5,6 +5,9 @@ metadata:
   name: {{ template "selfcerts.fullname" . }}-cleaner
   namespace: {{ .Release.Namespace | quote }}
   annotations:
+    ignore-check.kube-linter.io/no-liveness-probe: "this is a short lived job"
+    ignore-check.kube-linter.io/non-isolated-pod: "this is a short lived job"
+    reloader.stakater.com/auto: "true"
     # This is what defines this resource as a hook. Without this line, the
     # job is considered part of the release.
     "helm.sh/hook": pre-delete
@@ -36,5 +39,9 @@ spec:
           env:
           - name: STATEFULSET_NAME
             value: {{ template "cockroachdb.fullname" . }}
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
       serviceAccountName: {{ template "rotatecerts.fullname" . }}
 {{- end}}

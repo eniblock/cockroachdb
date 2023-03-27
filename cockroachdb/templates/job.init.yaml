@@ -24,6 +24,9 @@ metadata:
     {{- with .Values.init.jobAnnotations }}
     {{- toYaml . | nindent 4 }}
     {{- end }}
+    ignore-check.kube-linter.io/no-liveness-probe: "this is a short lived job"
+    ignore-check.kube-linter.io/non-isolated-pod: "this is a short lived job"
+    reloader.stakater.com/auto: "true"
 spec:
   template:
     metadata:
@@ -48,8 +51,8 @@ spec:
         - name: {{ template "cockroachdb.fullname" . }}.self-signed-certs.registry
       {{- end }}
     {{- end }}
+      serviceAccountName: {{ template "cockroachdb.serviceAccount.name" . }}
     {{- if .Values.tls.enabled }}
-      serviceAccountName: {{ template "cockroachdb.tls.serviceAccount.name" . }}
       initContainers:
         - name: copy-certs
           image: {{ .Values.tls.copyCerts.image | quote }}

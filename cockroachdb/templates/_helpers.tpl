@@ -33,11 +33,11 @@ Create chart name and version as used by the chart label.
 {{/*
 Create the name of the ServiceAccount to use.
 */}}
-{{- define "cockroachdb.tls.serviceAccount.name" -}}
-{{- if .Values.tls.serviceAccount.create -}}
-    {{- default (include "cockroachdb.fullname" .) .Values.tls.serviceAccount.name -}}
+{{- define "cockroachdb.serviceAccount.name" -}}
+{{- if .Values.serviceAccount.create -}}
+    {{- default (include "cockroachdb.fullname" .) .Values.serviceAccount.name -}}
 {{- else -}}
-    {{- default "default" .Values.tls.serviceAccount.name -}}
+    {{- default "default" .Values.serviceAccount.name -}}
 {{- end -}}
 {{- end -}}
 

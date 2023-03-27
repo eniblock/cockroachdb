@@ -1,0 +1,6 @@
+statefulset:
+  replicas: 1
+tls:
+  enabled: false
+conf:
+  single-node: true

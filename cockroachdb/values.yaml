@@ -234,13 +234,13 @@ statefulset:
   # Uncomment the following resources definitions or pass them from
   # command line to control the CPU and memory resources allocated
   # by Pods of this StatefulSet.
-  resources: {}
+  resources:
     # limits:
     #   cpu: 100m
     #   memory: 512Mi
-    # requests:
-    #   cpu: 100m
-    #   memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 512Mi
 
   # Custom Liveness probe
   # https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#define-a-liveness-http-request
@@ -394,10 +394,10 @@ init:
   # cluster. Normally, you should leave this section commented out, but if your
   # Kubernetes cluster uses Resource Quotas and requires all pods to specify
   # resource requests or limits, you can set those here.
-  resources: {}
-    # requests:
-    #   cpu: "10m"
-    #   memory: "128Mi"
+  resources:
+    requests:
+      cpu: "10m"
+      memory: "128Mi"
     # limits:
     #   cpu: "10m"
     #   memory: "128Mi"
@@ -432,18 +432,18 @@ init:
     #       # https://www.cockroachlabs.com/docs/stable/create-schedule-for-backup.html#schedule-options
     #       options: [first_run = 'now']
 
+serviceAccount:
+  # Specifies whether this ServiceAccount should be created.
+  create: true
+  # The name of this ServiceAccount to use.
+  # If not set and `create` is `true`, then a name is auto-generated.
+  name: ""
+  # Additional serviceAccount annotations (e.g. for attaching AWS IAM roles to pods)
+  annotations: {}
 
 # Whether to run securely using TLS certificates.
 tls:
   enabled: true
-  serviceAccount:
-    # Specifies whether this ServiceAccount should be created.
-    create: true
-    # The name of this ServiceAccount to use.
-    # If not set and `create` is `true`, then a name is auto-generated.
-    name: ""
-    # Additional serviceAccount annotations (e.g. for attaching AWS IAM roles to pods)
-    annotations: {}
   copyCerts:
     image: busybox
   certs:
@@ -520,7 +520,7 @@ tls:
       # password: changeme
 
 networkPolicy:
-  enabled: false
+  enabled: true
 
   ingress:
     # List of sources which should be able to access the CockroachDB Pods via

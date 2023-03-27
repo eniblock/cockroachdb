@@ -1,9 +1,5 @@
-{{- if and .Values.tls.certs.selfSigner.enabled .Values.tls.certs.selfSigner.rotateCerts }}
-  {{- if .Capabilities.APIVersions.Has "batch/v1/CronJob" }}
+{{- if and .Values.tls.enabled (and .Values.tls.certs.selfSigner.enabled .Values.tls.certs.selfSigner.rotateCerts) }}
 apiVersion: batch/v1
-  {{- else }}
-apiVersion: batch/v1beta1
-  {{- end }}
 kind: CronJob
 metadata:
   name: {{ template "rotatecerts.fullname" . }}-client
@@ -13,12 +9,17 @@ metadata:
     app.kubernetes.io/name: {{ template "cockroachdb.name" . }}
     app.kubernetes.io/instance: {{ .Release.Name | quote }}
     app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+  annotations:
+    ignore-check.kube-linter.io/no-liveness-probe: "this is a short lived job"
+    ignore-check.kube-linter.io/non-isolated-pod: "this is a short lived job"
+    reloader.stakater.com/auto: "true"
 spec:
   schedule: {{ template "selfcerts.clientRotateSchedule" . }}
   jobTemplate:
     spec:
       backoffLimit: 1
       template:
+        metadata:
         spec:
           restartPolicy: Never
           containers:
@@ -49,5 +50,9 @@ spec:
               value: {{ .Release.Namespace }}
             - name: CLUSTER_DOMAIN
               value: {{ .Values.clusterDomain}}
+            resources:
+              requests:
+                cpu: 100m
+                memory: 128Mi
           serviceAccountName: {{ template "rotatecerts.fullname" . }}
   {{- end}}

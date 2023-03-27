@@ -382,8 +382,8 @@ For details see the [`values.yaml`](values.yaml) file.
 | `init.tolerations`                                        | Node taints to tolerate by init Job Pod                         | `[]`                                                  |
 | `init.resources`                                          | Resource requests and limits for the `cluster-init` container   | `{}`                                                  |
 | `tls.enabled`                                             | Whether to run securely using TLS certificates                  | `no`                                                  |
-| `tls.serviceAccount.create`                               | Whether to create a new RBAC service account                    | `yes`                                                 |
-| `tls.serviceAccount.name`                                 | Name of RBAC service account to use                             | `""`                                                  |
+| `serviceAccount.create`                               | Whether to create a new RBAC service account                    | `yes`                                                 |
+| `serviceAccount.name`                                 | Name of RBAC service account to use                             | `""`                                                  |
 | `tls.copyCerts.image`                                     | Image used in copy certs init container                         | `busybox`                                             |
 | `tls.copyCerts.resources`                                 | Resource requests and limits for the `copy-certs` container     | `{}`                                                 |
 | `tls.certs.provided`                                      | Bring your own certs scenario, i.e certificates are provided    | `no`                                                  |

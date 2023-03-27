@@ -14,6 +14,8 @@ metadata:
   {{- with .Values.labels }}
     {{- toYaml . | nindent 4 }}
   {{- end }}
+  annotations:
+    reloader.stakater.com/auto: "true"
 spec:
   serviceName: {{ template "cockroachdb.fullname" . }}
   replicas: {{ .Values.statefulset.replicas | int64 }}
@@ -50,8 +52,8 @@ spec:
         - name: {{ template "cockroachdb.fullname" . }}.self-signed-certs.registry
       {{- end }}
     {{- end }}
+      serviceAccountName: {{ template "cockroachdb.serviceAccount.name" . }}
     {{- if .Values.tls.enabled }}
-      serviceAccountName: {{ template "cockroachdb.tls.serviceAccount.name" . }}
       {{- if .Values.tls.enabled }}
       initContainers:
         - name: copy-certs
