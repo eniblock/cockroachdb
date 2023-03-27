@@ -1,0 +1,38 @@
+name: ci
+on:
+  push:
+    branches:
+      - "**"
+    tags:
+      - "*"
+
+jobs:
+
+  ############################ tests ############################
+
+  lint-helm:
+    runs-on: [self-hosted]
+    steps:
+    - uses: eniblock/build/actions/setup@4.1
+      id: setup
+      with:
+        dockerhub_token: ${{ secrets.DOCKERHUB_TOKEN }}
+    - run: earthly +lint
+
+  ############################ helm ############################
+
+  helm-publish:
+    runs-on: [self-hosted]
+    needs: [lint-helm]
+    steps:
+    - uses: eniblock/build/actions/setup@4.1
+      id: setup
+      with:
+        helmdir: cockroachdb
+        dockerhub_token: ${{ secrets.DOCKERHUB_TOKEN }}
+    - name: Build/Publish the helm charts
+      run: |
+        earthly \
+          --secret registry_password=${{ github.token }} \
+          +publish \
+          --tag=${{ steps.setup.outputs.tag }}
