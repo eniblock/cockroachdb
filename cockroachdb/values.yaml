@@ -148,6 +148,9 @@ conf:
   # CockroachDB's port to listen to HTTP requests.
   http-port: 8080
 
+  # CockroachDB's port to listen to SQL requests.
+  sql-port: 5432
+
   # CockroachDB's data mount path.
   path: cockroach-data
 
@@ -281,6 +284,9 @@ service:
     http:
       port: 8080
       name: http
+    sql:
+      port: 5432
+      name: sql
 
   # This Service is meant to be used by clients of the database.
   # It exposes a ClusterIP that will automatically load balance connections

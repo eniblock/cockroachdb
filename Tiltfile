@@ -15,7 +15,7 @@ k8s_yaml(
         name="cockroachdb",
     )
 )
-k8s_resource('cockroachdb', port_forwards=['8080:8080', '26257:26257'])
+k8s_resource('cockroachdb', port_forwards=['8080:8080', '5432:5432'])
 
 local_resource('helm lint',
                'earthly +lint',

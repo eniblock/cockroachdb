@@ -98,7 +98,7 @@ spec:
           # or when cluster has been initialized already.
           command:
           - /bin/bash
-          - -c
+          - -exc
           - >-
             {{- if $isClusterInitEnabled }}
               initCluster() {
@@ -143,7 +143,7 @@ spec:
                     --insecure \
                     {{- end }}
                     --host={{ template "cockroachdb.fullname" . }}-0.{{ template "cockroachdb.fullname" . -}}
-                            :{{ .Values.service.ports.grpc.internal.port | int64 }} \
+                            :{{ .Values.service.ports.sql.port | int64 }} \
                     --execute="
                       {{- range $clusterSetting, $clusterSettingValue := .Values.init.provisioning.clusterSettings }}
                         SET CLUSTER SETTING {{ $clusterSetting }} = '${{ $clusterSetting | replace "." "_" }}_CLUSTER_SETTING';

@@ -47,6 +47,9 @@ spec:
     - name: {{ $ports.http.name | quote }}
       port: {{ $ports.http.port | int64 }}
       targetPort: http
+    - name: {{ $ports.sql.name | quote }}
+      port: {{ $ports.sql.port | int64 }}
+      targetPort: sql
   selector:
     app.kubernetes.io/name: {{ template "cockroachdb.name" . }}
     app.kubernetes.io/instance: {{ .Release.Name | quote }}

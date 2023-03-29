@@ -188,6 +188,7 @@ spec:
             {{- end }}
             {{- end }}
             {{- end }}
+              --sql-addr=0.0.0.0:{{ index .Values.conf `sql-port` | int64 }}
               --advertise-host=$(hostname).${STATEFULSET_FQDN}
             {{- if .Values.tls.enabled }}
               --certs-dir=/cockroach/cockroach-certs/
@@ -237,6 +238,9 @@ spec:
           ports:
             - name: grpc
               containerPort: {{ .Values.conf.port | int64 }}
+              protocol: TCP
+            - name: sql
+              containerPort: {{ index .Values.conf `sql-port` | int64 }}
               protocol: TCP
             - name: http
               containerPort: {{ index .Values.conf `http-port` | int64 }}

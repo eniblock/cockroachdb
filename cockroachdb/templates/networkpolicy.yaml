@@ -28,11 +28,6 @@ spec:
         # Allow connections via custom rules.
         {{- toYaml . | nindent 8 }}
         {{- end }}
-        # Allow client connection via pre-considered label.
-        - podSelector:
-            matchLabels:
-              {{ template "cockroachdb.fullname" . }}-client: "true"
-        # Allow other CockroachDBs to connect to form a cluster.
         - podSelector:
             matchLabels:
               app.kubernetes.io/name: {{ template "cockroachdb.name" . }}
@@ -40,7 +35,6 @@ spec:
             {{- with .Values.statefulset.labels }}
               {{- toYaml . | nindent 14 }}
             {{- end }}
-      {{- if gt (.Values.statefulset.replicas | int64) 1 }}
         # Allow init Job to connect to bootstrap a cluster.
         - podSelector:
             matchLabels:
@@ -49,10 +43,27 @@ spec:
             {{- with .Values.init.labels }}
               {{- toYaml . | nindent 14 }}
             {{- end }}
-      {{- end }}
     # Allow connections to admin UI and for Prometheus.
     - ports:
         - port: http
+        - port: sql
+      from:
+        {{- with .Values.networkPolicy.ingress.grpc }}
+        # Allow connections via custom rules.
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+        # Allow client connection via pre-considered label.
+        - podSelector:
+            matchLabels:
+              {{ template "cockroachdb.fullname" . }}-client: "true"
+        # Allow init Job to connect to bootstrap a cluster.
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: {{ template "cockroachdb.name" . }}
+              app.kubernetes.io/instance: {{ .Release.Name | quote }}
+            {{- with .Values.init.labels }}
+              {{- toYaml . | nindent 14 }}
+            {{- end }}
     {{- with .Values.networkPolicy.ingress.http }}
       from: {{- toYaml . | nindent 8 }}
     {{- end }}
