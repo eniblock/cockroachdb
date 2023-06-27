@@ -19,8 +19,6 @@ metadata:
     {{- toYaml . | nindent 4 }}
   {{- end }}
   annotations:
-    helm.sh/hook: post-install,post-upgrade
-    helm.sh/hook-delete-policy: before-hook-creation
     {{- with .Values.init.jobAnnotations }}
     {{- toYaml . | nindent 4 }}
     {{- end }}
@@ -28,6 +26,8 @@ metadata:
     ignore-check.kube-linter.io/non-isolated-pod: "this is a short lived job"
     reloader.stakater.com/auto: "true"
 spec:
+  backoffLimit: 100
+  ttlSecondsAfterFinished: 100
   template:
     metadata:
       labels:
