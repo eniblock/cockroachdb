@@ -40,6 +40,17 @@ spec:
       annotations: {{- toYaml . | nindent 8 }}
     {{- end }}
     spec:
+    {{- if eq (include "cockroachdb.securityContext.versionValidation" .) "true" }}
+    {{- if and .Values.init.securityContext.enabled }}
+      securityContext:
+        seccompProfile:
+          type: "RuntimeDefault"
+        runAsGroup: 1000
+        runAsUser: 1000
+        fsGroup: 1000
+        runAsNonRoot: true
+    {{- end }}
+    {{- end }}
       restartPolicy: OnFailure
       terminationGracePeriodSeconds: 0
     {{- if or .Values.image.credentials (and .Values.tls.enabled .Values.tls.selfSigner.image.credentials (not .Values.tls.certs.provided) (not .Values.tls.certs.certManager)) }}
@@ -66,6 +77,12 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.namespace
+        {{- if and .Values.init.securityContext.enabled }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:  
+              drop: ["ALL"]
+        {{- end }}
           volumeMounts:
             - name: client-certs
               mountPath: /cockroach-certs/
@@ -116,16 +133,17 @@ spec:
                       --cluster-name={{.}} \
                       {{- end }}
                       --host={{ template "cockroachdb.fullname" . }}-0.{{ template "cockroachdb.fullname" . -}}
-                              :{{ .Values.service.ports.grpc.internal.port | int64 }}
+                              :{{ .Values.service.ports.grpc.internal.port | int64 }} \
                   2>&1);
 
                   local exitCode="$?";
                   echo $output;
 
-                  if [[ "$exitCode" == "0" || "$output" == *"cluster has already been initialized"* ]]
-                    then break;
+                  if [[ "$output" =~ .*"Cluster successfully initialized".* || "$output" =~ .*"cluster has already been initialized".* ]]; then
+                    break;
                   fi
 
+                  echo "Cluster is not ready to be initialized, retrying in 5 seconds"
                   sleep 5;
                 done
               }
@@ -171,6 +189,10 @@ spec:
                         GRANT ALL ON DATABASE {{ $database.name }} TO {{ $owner }};
                       {{- end }}
 
+                      {{- range $owner := $database.owners_with_grant_option }}
+                        GRANT ALL ON DATABASE {{ $database.name }} TO {{ $owner }} WITH GRANT OPTION;
+                      {{- end }}
+
                       {{- if $database.backup }}
                         CREATE SCHEDULE IF NOT EXISTS {{ $database.name }}_scheduled_backup
                           FOR BACKUP DATABASE {{ $database.name }} INTO '{{ $database.backup.into }}'
@@ -196,7 +218,7 @@ spec:
 
                   local exitCode="$?";
 
-                  if [[ "$exitCode" == "0" ]]
+                  if [[ "$exitCode" -eq "0" ]]
                     then break;
                   fi
 
@@ -235,6 +257,12 @@ spec:
         {{- end }}
         {{- with .Values.init.resources }}
           resources: {{- toYaml . | nindent 12 }}
+        {{- end }}
+        {{- if and .Values.init.securityContext.enabled }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:  
+              drop: ["ALL"]
         {{- end }}
     {{- if .Values.tls.enabled }}
       volumes:
