@@ -3,9 +3,6 @@ VERSION 0.6
 ARG helmhelper=github.com/eniblock/build/helm:develop
 IMPORT $helmhelper AS helm
 
-ARG deployhelper=github.com/eniblock/build/deploy:develop
-IMPORT $deployhelper AS deploy
-
 ARG repository=ghcr.io/eniblock/cockroachdb
 
 deps:
