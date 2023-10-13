@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-
+secret_settings(disable_scrub=True)
 config.define_bool("no-volumes")
 cfg = config.parse()
 

@@ -80,7 +80,7 @@ spec:
         {{- if and .Values.init.securityContext.enabled }}
           securityContext:
             allowPrivilegeEscalation: false
-            capabilities:  
+            capabilities:
               drop: ["ALL"]
         {{- end }}
           volumeMounts:
@@ -169,7 +169,7 @@ spec:
 
                       {{- range $user := .Values.init.provisioning.users }}
                         CREATE USER IF NOT EXISTS {{ $user.name }} WITH
-                        {{- if $user.password }}
+                        {{- if or $user.password $user.password_existing_secret}}
                           PASSWORD '${{ $user.name }}_PASSWORD'
                         {{- else }}
                           PASSWORD null
@@ -239,6 +239,12 @@ spec:
               secretKeyRef:
                 name: {{ $secretName }}
                 key: {{ $user.name }}-password
+        {{- else if $user.password_existing_secret }}
+          - name: {{ $user.name }}_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ tpl $user.password_existing_secret $ }}
+                key: {{ $user.password_existing_secret_key }}
         {{- end }}
         {{- end }}
         {{- range $clusterSetting, $clusterSettingValue := .Values.init.provisioning.clusterSettings }}
@@ -261,7 +267,7 @@ spec:
         {{- if and .Values.init.securityContext.enabled }}
           securityContext:
             allowPrivilegeEscalation: false
-            capabilities:  
+            capabilities:
               drop: ["ALL"]
         {{- end }}
     {{- if .Values.tls.enabled }}
