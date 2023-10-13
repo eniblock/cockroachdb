@@ -31,7 +31,7 @@ jobs:
         earthly \
           --secret registry_password=${{ github.token }} \
           +publish \
-          --tag=${{ steps.setup.outputs.tag }}
+          --tag=${{ env.TAG }}
     - name: Generate job summary
       run: |
         cat <<"EOF" >> $GITHUB_STEP_SUMMARY
