@@ -467,7 +467,11 @@ init:
 tls:
   enabled: true
   copyCerts:
-    image: busybox
+    image: busybox:1.36
+    resources:
+      requests:
+        cpu: "10m"
+        memory: "128Mi"
   certs:
     # Bring your own certs scenario. If provided, tls.init section will be ignored.
     provided: false
