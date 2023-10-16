@@ -50,5 +50,9 @@ spec:
     {{- end }}
     {{- if .Values.serviceMonitor.tlsConfig }}
     tlsConfig: {{ toYaml .Values.serviceMonitor.tlsConfig | nindent 6 }}
+    {{- else if .Values.tls.enabled }}
+    scheme: https
+    tlsConfig:
+      insecureSkipVerify: true
     {{- end }}
 {{- end }}
