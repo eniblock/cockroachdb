@@ -1,4 +1,4 @@
-{{- if and (and .Values.tls.enabled .Values.tls.certs.selfSigner.enabled) .Values.tls.certs.selfSigner.cleaner.enabled }}
+{{- if and (and .Values.tls.enabled .Values.tls.certs.selfSigner.enabled) .Values.tls.certs.selfSigner.cleanCerts }}
 apiVersion: batch/v1
 kind: Job
 metadata:
