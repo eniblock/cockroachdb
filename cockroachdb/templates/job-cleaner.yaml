@@ -1,4 +1,4 @@
-{{- if and .Values.tls.enabled .Values.tls.certs.selfSigner.enabled }}
+{{- if and (and .Values.tls.enabled .Values.tls.certs.selfSigner.enabled) .Values.tls.certs.selfSigner.cleaner.enabled }}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -51,7 +51,7 @@ spec:
         {{- if and .Values.tls.certs.selfSigner.securityContext.enabled }}
           securityContext:
             allowPrivilegeEscalation: false
-            capabilities:  
+            capabilities:
               drop: ["ALL"]
         {{- end }}
           resources:

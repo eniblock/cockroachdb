@@ -517,6 +517,8 @@ tls:
       podUpdateTimeout: 2m
       # ServiceAccount annotations for selfSigner jobs (e.g. for attaching AWS IAM roles to pods)
       svcAccountAnnotations: {}
+      cleaner:
+        enabled: true
 
     # Use cert-manager to issue certificates for mTLS.
     certManager: false
